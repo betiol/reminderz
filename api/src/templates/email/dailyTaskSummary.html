@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Resumo Diário de Tarefas</title>
+  <style>
+    /* Base styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+    }
+    
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 20px 0;
+      background-color: #6366f1;
+      color: white;
+      border-radius: 8px 8px 0 0;
+    }
+    
+    .logo {
+      width: 120px;
+      height: auto;
+    }
+    
+    /* Main content */
+    .content {
+      padding: 30px 20px;
+      background-color: #ffffff;
+    }
+    
+    h1 {
+      color: #4338ca;
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    
+    h2 {
+      color: #4338ca;
+      font-size: 20px;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    p {
+      margin-bottom: 20px;
+      color: #4b5563;
+    }
+    
+    /* Tasks */
+    .task-list {
+      margin-bottom: 30px;
+    }
+    
+    .task {
+      padding: 15px;
+      border-left: 4px solid #6366f1;
+      background-color: #f3f4f6;
+      margin-bottom: 10px;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .task-overdue {
+      border-left-color: #ef4444;
+    }
+    
+    .task-today {
+      border-left-color: #f59e0b;
+    }
+    
+    .task-tomorrow {
+      border-left-color: #10b981;
+    }
+    
+    .task-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #1f2937;
+    }
+    
+    .task-time {
+      display: inline-block;
+      background-color: #e5e7eb;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #4b5563;
+    }
+    
+    .task-high-priority {
+      display: inline-block;
+      background-color: #fee2e2;
+      color: #b91c1c;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+    }
+    
+    .task-medium-priority {
+      display: inline-block;
+      background-color: #fef3c7;
+      color: #92400e;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+    }
+    
+    .task-description {
+      margin-top: 10px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    /* Button */
+    .button {
+      display: inline-block;
+      background-color: #6366f1;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 30px 0;
+      color: #6b7280;
+      font-size: 12px;
+      background-color: #f3f4f6;
+      border-radius: 0 0 8px 8px;
+    }
+    
+    .no-tasks {
+      text-align: center;
+      padding: 20px;
+      background-color: #f9fafb;
+      border-radius: 6px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; margin: 0; padding: 0;">
+  <div class="container" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
+    <div class="header" style="text-align: center; padding: 20px 0; background-color: #6366f1; color: white; border-radius: 8px 8px 0 0;">
+      <h1 style="color: white; font-size: 28px; margin: 0;">Reminderz</h1>
+      <p style="margin: 5px 0 0; color: white;">Seu assistente de produtividade</p>
+    </div>
+    
+    <div class="content" style="padding: 30px 20px; background-color: #ffffff;">
+      <h1 style="color: #4338ca; font-size: 24px; margin-top: 0; margin-bottom: 20px;">Olá, {{userName}}!</h1>
+      
+      <p style="margin-bottom: 20px; color: #4b5563;">
+        Aqui está o resumo das suas tarefas para {{date}}:
+      </p>
+      
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const overdueTasks = JSON.parse('{{overdueTasksJSON}}');
+          const overdueContainer = document.getElementById('overdue-tasks');
+          
+          if (overdueTasks.length > 0) {
+            overdueTasks.forEach(task => {
+              const taskElement = createTaskElement(task, 'overdue');
+              overdueContainer.appendChild(taskElement);
+            });
+          } else {
+            const noTasks = document.createElement('div');
+            noTasks.className = 'no-tasks';
+            noTasks.textContent = 'Você não tem tarefas vencidas. Bom trabalho!';
+            overdueContainer.appendChild(noTasks);
+          }
+          
+          const todayTasks = JSON.parse('{{todayTasksJSON}}');
+          const todayContainer = document.getElementById('today-tasks');
+          
+          if (todayTasks.length > 0) {
+            todayTasks.forEach(task => {
+              const taskElement = createTaskElement(task, 'today');
+              todayContainer.appendChild(taskElement);
+            });
+          } else {
+            const noTasks = document.createElement('div');
+            noTasks.className = 'no-tasks';
+            noTasks.textContent = 'Você não tem tarefas para hoje.';
+            todayContainer.appendChild(noTasks);
+          }
+          
+          const tomorrowTasks = JSON.parse('{{tomorrowTasksJSON}}');
+          const tomorrowContainer = document.getElementById('tomorrow-tasks');
+          
+          if (tomorrowTasks.length > 0) {
+            tomorrowTasks.forEach(task => {
+              const taskElement = createTaskElement(task, 'tomorrow');
+              tomorrowContainer.appendChild(taskElement);
+            });
+          } else {
+            const noTasks = document.createElement('div');
+            noTasks.className = 'no-tasks';
+            noTasks.textContent = 'Você não tem tarefas para amanhã.';
+            tomorrowContainer.appendChild(noTasks);
+          }
+        });
+        
+        function createTaskElement(task, type) {
+          const taskDiv = document.createElement('div');
+          taskDiv.className = `task task-${type}`;
+          
+          const title = document.createElement('h3');
+          title.className = 'task-title';
+          title.textContent = task.title;
+          
+          const time = document.createElement('span');
+          time.className = 'task-time';
+          time.textContent = task.formattedDate;
+          
+          const taskDetails = document.createElement('div');
+          taskDetails.appendChild(time);
+          
+          if (task.priority === 'high') {
+            const priority = document.createElement('span');
+            priority.className = 'task-high-priority';
+            priority.textContent = 'Alta Prioridade';
+            taskDetails.appendChild(priority);
+          } else if (task.priority === 'medium') {
+            const priority = document.createElement('span');
+            priority.className = 'task-medium-priority';
+            priority.textContent = 'Média Prioridade';
+            taskDetails.appendChild(priority);
+          }
+          
+          const description = document.createElement('p');
+          description.className = 'task-description';
+          description.textContent = task.description || '';
+          
+          taskDiv.appendChild(title);
+          taskDiv.appendChild(taskDetails);
+          
+          if (task.description) {
+            taskDiv.appendChild(description);
+          }
+          
+          return taskDiv;
+        }
+      </script>
+      
+      <!-- Fallback para clientes de email que não executam JavaScript -->
+      <!-- Tarefas vencidas -->
+      <h2 style="color: #ef4444; font-size: 20px; margin-top: 30px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">
+        Tarefas Vencidas ({{overdueTasksCount}})
+      </h2>
+      
+      <div class="task-list" id="overdue-tasks">
+        {{#overdueTasks}}
+        <div style="padding: 15px; border-left: 4px solid #ef4444; background-color: #f3f4f6; margin-bottom: 10px; border-radius: 0 4px 4px 0;">
+          <h3 style="font-weight: 600; font-size: 16px; margin-top: 0; margin-bottom: 8px; color: #1f2937;">{{title}}</h3>
+          <div>
+            <span style="display: inline-block; background-color: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #4b5563;">{{formattedDate}}</span>
+            {{#if priority}}
+            <span style="display: inline-block; background-color: #fee2e2; color: #b91c1c; font-size: 12px; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">{{priority}}</span>
+            {{/if}}
+          </div>
+          {{#if description}}
+          <p style="margin-top: 10px; color: #6b7280; font-size: 14px;">{{description}}</p>
+          {{/if}}
+        </div>
+        {{/overdueTasks}}
+        
+        {{^overdueTasks}}
+        <div style="text-align: center; padding: 20px; background-color: #f9fafb; border-radius: 6px; color: #6b7280;">
+          <p style="margin: 0;">Ótimo! Você não tem tarefas vencidas.</p>
+        </div>
+        {{/overdueTasks}}
+      </div>
+      
+      <!-- Tarefas de hoje -->
+      <h2 style="color: #f59e0b; font-size: 20px; margin-top: 30px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">
+        Tarefas de Hoje ({{todayTasksCount}})
+      </h2>
+      
+      <div class="task-list" id="today-tasks">
+        {{#todayTasks}}
+        <div style="padding: 15px; border-left: 4px solid #f59e0b; background-color: #f3f4f6; margin-bottom: 10px; border-radius: 0 4px 4px 0;">
+          <h3 style="font-weight: 600; font-size: 16px; margin-top: 0; margin-bottom: 8px; color: #1f2937;">{{title}}</h3>
+          <div>
+            <span style="display: inline-block; background-color: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #4b5563;">{{formattedDate}}</span>
+            {{#if priority}}
+            <span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-size: 12px; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">{{priority}}</span>
+            {{/if}}
+          </div>
+          {{#if description}}
+          <p style="margin-top: 10px; color: #6b7280; font-size: 14px;">{{description}}</p>
+          {{/if}}
+        </div>
+        {{/todayTasks}}
+        
+        {{^todayTasks}}
+        <div style="text-align: center; padding: 20px; background-color: #f9fafb; border-radius: 6px; color: #6b7280;">
+          <p style="margin: 0;">Você não tem tarefas para hoje.</p>
+        </div>
+        {{/todayTasks}}
+      </div>
+      
+      <!-- Tarefas de amanhã -->
+      <h2 style="color: #10b981; font-size: 20px; margin-top: 30px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">
+        Tarefas de Amanhã ({{tomorrowTasksCount}})
+      </h2>
+      
+      <div class="task-list" id="tomorrow-tasks">
+        {{#tomorrowTasks}}
+        <div style="padding: 15px; border-left: 4px solid #10b981; background-color: #f3f4f6; margin-bottom: 10px; border-radius: 0 4px 4px 0;">
+          <h3 style="font-weight: 600; font-size: 16px; margin-top: 0; margin-bottom: 8px; color: #1f2937;">{{title}}</h3>
+          <div>
+            <span style="display: inline-block; background-color: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #4b5563;">{{formattedDate}}</span>
+            {{#if priority}}
+            <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">{{priority}}</span>
+            {{/if}}
+          </div>
+          {{#if description}}
+          <p style="margin-top: 10px; color: #6b7280; font-size: 14px;">{{description}}</p>
+          {{/if}}
+        </div>
+        {{/tomorrowTasks}}
+        
+        {{^tomorrowTasks}}
+        <div style="text-align: center; padding: 20px; background-color: #f9fafb; border-radius: 6px; color: #6b7280;">
+          <p style="margin: 0;">Você não tem tarefas agendadas para amanhã.</p>
+        </div>
+        {{/tomorrowTasks}}
+      </div>
+      
+      <div style="text-align: center; margin-top: 40px;">
+        <a href="{{baseUrl}}/dashboard" class="button" style="display: inline-block; background-color: #6366f1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+          Ver Todas as Tarefas
+        </a>
+      </div>
+    </div>
+    
+    <div class="footer" style="text-align: center; padding: 30px 0; color: #6b7280; font-size: 12px; background-color: #f3f4f6; border-radius: 0 0 8px 8px;">
+      <p style="margin-bottom: 10px;">
+        Este email foi enviado para você porque você habilitou notificações por email no Reminderz.
+      </p>
+      <p style="margin-bottom: 10px;">
+        Para alterar suas preferências de notificação, acesse as configurações da sua conta.
+      </p>
+      <p style="margin: 0;">
+        &copy; 2025 Reminderz. Todos os direitos reservados.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

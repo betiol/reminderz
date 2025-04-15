@@ -1,0 +1,50 @@
+name: Build and Deploy to Cloud Run Production
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  RUN_REGION: us-east1
+  SERVICE_NAME: api-node
+
+jobs:
+  setup-build-deploy:
+    name: Setup, Tests, Build, and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.RUN_SA_SECRET }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Submit Build to Google Cloud Build
+        run: |
+          gcloud builds submit \
+            --quiet \
+            --tag "gcr.io/reminderz-app/$SERVICE_NAME:$GITHUB_SHA"
+
+      - name: Deploy
+        run: |
+          gcloud run deploy "$SERVICE_NAME" \
+            --quiet \
+            --region "$RUN_REGION" \
+            --image "gcr.io/reminderz-app/$SERVICE_NAME:$GITHUB_SHA" \
+            --platform "managed" \
+            --allow-unauthenticated
